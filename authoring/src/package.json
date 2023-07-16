@@ -1,0 +1,16 @@
+{
+  "name": "authoring-openai-plugin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "",
+  "author": "craftercms",
+  "license": "MIT",
+  "private": true,
+  "packageManager": "yarn@3.2.2",
+  "scripts": {
+    "w:prettier": "yarn prettier --write './packages/**/*.{ts,tsx}'"
+  },
+  "dependencies": {
+    "prettier": "^2.5.1"
+  }
+}
