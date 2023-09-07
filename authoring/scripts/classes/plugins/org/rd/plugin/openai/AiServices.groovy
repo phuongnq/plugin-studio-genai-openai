@@ -1,21 +1,28 @@
 package plugins.org.rd.plugin.openai
 
-@Grab(group='com.theokanning.openai-gpt3-java', module='client', version='0.11.0', initClass=false)
+@Grab(group='com.theokanning.openai-gpt3-java', module='service', version='0.16.0', initClass=false)
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import com.theokanning.openai.OpenAiService
-import com.theokanning.openai.completion.CompletionRequest
+import com.theokanning.openai.service.OpenAiService
+import com.theokanning.openai.completion.chat.ChatCompletionRequest
+import com.theokanning.openai.completion.chat.ChatMessage
 import com.theokanning.openai.image.CreateImageRequest
+import java.time.Duration
 
-/** 
- * Open AI Text Gen (ChatGPT-3)
- * DAL-E image image services
+/**
+ * Open AI Text Gen (ChatGPT-4)
+ * DALL-E image image services
  */
 class AiServices {
 
   private static final Logger logger = LoggerFactory.getLogger(AiServices.class)
+
+  /**
+   * Default API calls timeout
+   */
+  private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(100)
 
   def openAiToken
   def openAiUserId
@@ -28,7 +35,7 @@ class AiServices {
     openAiToken = pluginConfig.getString("openAiToken")
     openAiUserId = pluginConfig.getString("openAiUserId")
 
-    openAiService = new OpenAiService(openAiToken)
+    openAiService = new OpenAiService(openAiToken, DEFAULT_TIMEOUT)
   }
 
  /**
@@ -37,7 +44,7 @@ class AiServices {
   def doImageGeneration(ask) {
     CreateImageRequest request = CreateImageRequest.builder()
       .prompt(ask)
-      .build();
+      .build()
 
     def images = []
     def generatedImages = openAiService.createImage(request).getData()
@@ -60,35 +67,28 @@ class AiServices {
       def generatedContent = []
 
     try {
-      CompletionRequest completionRequest = CompletionRequest.builder()
-        .model("text-davinci-003")
-        .prompt(ask)
-        .echo(false)
+      ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
+        .model("gpt-4")
+        .messages(List.of(
+          new ChatMessage("user", ask)
+        ))
         .user(openAiUserId)
         .maxTokens(350)
         .build()
 
-      def choices = openAiService.createCompletion(completionRequest).getChoices()
+      def choices = openAiService.createChatCompletion(completionRequest).getChoices()
 
-      choices.each { choice -> 
+      choices.each { choice ->
         // All of the answers come as one string (bug in API?)
-        def answers = choice.text.split("\n")
+        def answers = choice.getMessage().getContent().split("\n")
 
         answers.each { answer ->
           if(answer && answer != "") {
-            // remove number label from each answer
-            def cleanedAnswer = answer.substring(answer.indexOf(". ")+1)
-            
-            // Clean quotes off string (may be better way long term to parse answers)
-            //cleanedAnswer = cleanedAnswer.substring(1,cleanedAnswer.length)
-
-            generatedContent.add(cleanedAnswer)
+            generatedContent.add(answer)
           }
         }
       }
-
-    }
-    catch(err) {
+    } catch(err) {
       generatedContent = ["oops"]
     }
 
