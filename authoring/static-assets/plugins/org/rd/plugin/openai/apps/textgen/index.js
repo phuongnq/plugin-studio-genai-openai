@@ -6,6 +6,7 @@ const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.has
 const Button = craftercms.libs.MaterialUI.Button && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.Button, 'default') ? craftercms.libs.MaterialUI.Button['default'] : craftercms.libs.MaterialUI.Button;
 const SystemIcon = craftercms.components.SystemIcon && Object.prototype.hasOwnProperty.call(craftercms.components.SystemIcon, 'default') ? craftercms.components.SystemIcon['default'] : craftercms.components.SystemIcon;
 const { createAction } = craftercms.libs.ReduxToolkit;
+const ToolsPanelListItemButton = craftercms.components.ToolsPanelListItemButton && Object.prototype.hasOwnProperty.call(craftercms.components.ToolsPanelListItemButton, 'default') ? craftercms.components.ToolsPanelListItemButton['default'] : craftercms.components.ToolsPanelListItemButton;
 const Skeleton = craftercms.libs.MaterialUI.Skeleton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.Skeleton, 'default') ? craftercms.libs.MaterialUI.Skeleton['default'] : craftercms.libs.MaterialUI.Skeleton;
 const ContentCopyRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ContentCopyRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ContentCopyRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ContentCopyRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ContentCopyRounded');
 const { get } = craftercms.utils.ajax;
@@ -94,6 +95,36 @@ function GenerateContent(props) {
     return useIcon ? (React.createElement(Tooltip, { title: item ? "".concat(label) : '' },
         React.createElement(IconButton, { size: "small", onClick: handleClick, disabled: !item },
             React.createElement(SystemIcon, { icon: { id: iconId } })))) : (React.createElement(Button, { size: "small", variant: "text", onClick: handleClick, disabled: !item }, label));
+}
+
+/*
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+function GenerateContentPanelButton(props) {
+    var dispatch = useDispatch();
+    var _a = props.title, title = _a === void 0 ? 'Generate Content' : _a, _b = props.icon, icon = _b === void 0 ? { id: '@mui/icons-material/PsychologyRounded' } : _b;
+    var handleClick = function (event) {
+        dispatch(showWidgetDialog({
+            title: 'AI Generated Content Assistant',
+            extraProps: props,
+            widget: {
+                id: 'org.rd.plugin.openai.dialog'
+            }
+        }));
+    };
+    return (React.createElement(ToolsPanelListItemButton, { icon: icon, title: title, onClick: handleClick }));
 }
 
 /******************************************************************************
@@ -237,6 +268,7 @@ var plugin = {
     id: 'org.rd.plugin.openai',
     widgets: {
         'org.rd.plugin.openai.GenerateContent': GenerateContent,
+        'org.rd.plugin.openai.GenerateContentPanelButton': GenerateContentPanelButton,
         'org.rd.plugin.openai.dialog': GenerateContentDialog
     }
 };

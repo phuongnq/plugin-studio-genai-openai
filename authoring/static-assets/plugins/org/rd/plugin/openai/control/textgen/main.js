@@ -39,7 +39,7 @@
               buttonEl.onclick = function () {
                 var _this = this;
                 var subject = prompt("Tell me about the subject");
-                var api = window.location.protocol + "//" + window.location.host + "/api/plugins/org/rd/plugin/openai/openai/gentext.json?" + "subject=" + subject + "&fieldName=Title";
+                var api = window.location.protocol + "//" + window.location.host + "/api/plugins/org/rd/plugin/openai/openai/suggest.json?" + "subject=" + subject + "&fieldName=Title";
                 fetch(api, {
                   method: 'GET'
                 }).then(function (response) {

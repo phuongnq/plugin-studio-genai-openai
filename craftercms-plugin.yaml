@@ -62,6 +62,9 @@ plugin:
     - major: 4
       minor: 0
       patch: 7
+    - major: 4
+      minor: 1
+      patch: 2
   crafterCmsEditions:
     - community
     - enterprise
@@ -73,6 +76,58 @@ plugin:
       name: openAiToken
       description: OpenAI API Token
   installation:
+    - type: preview-app
+      elementXpath: //plugin[@id='org.rd.plugin.openai.GenerateContentPanelButton']
+      parentXpath: //widget[@id='craftercms.components.ToolsPanel']/configuration/widgets
+      element:
+        name: widget
+        attributes:
+        - name: id
+          value: org.rd.plugin.openai.GenerateContentPanelButton
+        children:
+        - name: plugin
+          attributes:
+          - name: id
+            value: org.rd.plugin.openai
+          - name: site
+            value: "{site}"
+          - name: type
+            value: apps
+          - name: name
+            value: textgen
+          - name: filename
+            value: index.js
+    - type: preview-app
+      elementXpath: //plugin[@id='org.rd.plugin.openai.GenerateContent']
+      parentXpath: //widget[@id='craftercms.components.PreviewToolbar']
+      element:
+        name: configuration
+        children:
+        - name: leftSection
+          children:
+          - name: widgets
+            children:
+            - name: widget
+              attributes:
+              - name: id
+                value: org.rd.plugin.openai.GenerateContent
+              children:
+              - name: configuration
+                children:
+                - name: useIcon
+                  value: true
+              - name: plugin
+                attributes:
+                - name: id
+                  value: org.rd.plugin.openai
+                - name: site
+                  value: "{site}"
+                - name: type
+                  value: apps
+                - name: name
+                  value: textgen
+                - name: filename
+                  value: index.js
     - type: form-control
       elementXpath: //control/plugin[pluginId='org.rd.plugin.openai']
       element:
@@ -83,11 +138,11 @@ plugin:
               - name: pluginId
                 value: org.rd.plugin.openai
               - name: type
-                value: apps
+                value: control
               - name: name
                 value: textgen
               - name: filename
-                value: index.js
+                value: main.js
           - name: icon
             children:
               - name: class

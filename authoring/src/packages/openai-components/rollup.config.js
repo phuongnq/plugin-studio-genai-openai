@@ -69,7 +69,7 @@ module.exports = {
         // },
         {
           src: './dist/*',
-          dest: '../../../authoring/static-assets/plugins/org/rd/plugin/openai/apps/openai'
+          dest: '../../../static-assets/plugins/org/rd/plugin/openai/apps/textgen/'
         }
       ]
     })

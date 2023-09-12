@@ -17,81 +17,81 @@ import java.time.Duration
  */
 class AiServices {
 
-  private static final Logger logger = LoggerFactory.getLogger(AiServices.class)
+    private static final Logger logger = LoggerFactory.getLogger(AiServices.class)
 
-  /**
-   * Default API calls timeout
-   */
-  private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(100)
+    /**
+     * Default API calls timeout
+     */
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(100)
 
-  def openAiToken
-  def openAiUserId
-  def openAiService
+    def openAiToken
+    def openAiUserId
+    def openAiService
 
-  /**
-   * config constructor
-   */
-  def AiServices(pluginConfig) {
-    openAiToken = pluginConfig.getString("openAiToken")
-    openAiUserId = pluginConfig.getString("openAiUserId")
+    /**
+     * config constructor
+     */
+    def AiServices(pluginConfig) {
+        openAiToken = pluginConfig.getString("openAiToken")
+        openAiUserId = pluginConfig.getString("openAiUserId")
 
-    openAiService = new OpenAiService(openAiToken, DEFAULT_TIMEOUT)
-  }
-
- /**
-  * perform text completion
-  */
-  def doImageGeneration(ask) {
-    CreateImageRequest request = CreateImageRequest.builder()
-      .prompt(ask)
-      .build()
-
-    def images = []
-    def generatedImages = openAiService.createImage(request).getData()
-
-    generatedImages.each { image ->
-      images.add(image.getUrl())
+        openAiService = new OpenAiService(openAiToken, DEFAULT_TIMEOUT)
     }
 
-    return images
-  }
+    /**
+     * perform text completion
+     */
+    def doImageGeneration(ask) {
+        CreateImageRequest request = CreateImageRequest.builder()
+            .prompt(ask)
+            .build()
 
-  def doDistillation(ask) {
-    return doCompletion("distill the following to a single word or phase: "+ask)[0]
-  }
+        def images = []
+        def generatedImages = openAiService.createImage(request).getData()
 
- /**
-  * perform text completion
-  */
-  def doCompletion(ask) {
-      def generatedContent = []
-
-    try {
-      ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-        .model("gpt-4")
-        .messages(List.of(
-          new ChatMessage("user", ask)
-        ))
-        .user(openAiUserId)
-        .maxTokens(350)
-        .build()
-
-      def choices = openAiService.createChatCompletion(completionRequest).getChoices()
-
-      choices.each { choice ->
-        // All of the answers come as one string (bug in API?)
-        def answers = choice.getMessage().getContent().split("\n")
-
-        answers.each { answer ->
-          if(answer && answer != "") {
-            generatedContent.add(answer)
-          }
+        generatedImages.each { image ->
+            images.add(image.getUrl())
         }
-      }
-    } catch(err) {
-      generatedContent = ["oops"]
+
+        return images
     }
 
-    return generatedContent
-  }
+    def doDistillation(ask) {
+        return doCompletion("distill the following to a single word or phase: "+ask)[0]
+    }
+
+    /**
+     * perform text completion
+     */
+    def doCompletion(ask) {
+        def generatedContent = []
+
+        try {
+            ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
+                .model("gpt-4")
+                .messages(List.of(
+                new ChatMessage("user", ask)
+                ))
+                .user(openAiUserId)
+                .maxTokens(350)
+                .build()
+
+            def choices = openAiService.createChatCompletion(completionRequest).getChoices()
+
+            choices.each { choice ->
+                // All of the answers come as one string (bug in API?)
+                def answers = choice.getMessage().getContent().split("\n")
+
+                answers.each { answer ->
+                    if (answer && answer != "") {
+                        generatedContent.add(answer)
+                    }
+                }
+            }
+        } catch(err) {
+            generatedContent = ["oops"]
+        }
+
+        return generatedContent
+    }
 }
