@@ -98,6 +98,33 @@ plugin:
           - name: filename
             value: index.js
     - type: preview-app
+      elementXpath: //plugin[@id='org.rd.plugin.openai.QuickCreateContent']
+      parentXpath: //widget[@id='craftercms.components.PreviewToolbar']
+      element:
+        name: configuration
+        children:
+        - name: leftSection
+          children:
+          - name: widgets
+            children:
+            - name: widget
+              attributes:
+              - name: id
+                value: org.rd.plugin.openai.QuickCreateContent
+              children:
+              - name: plugin
+                attributes:
+                - name: id
+                  value: org.rd.plugin.openai
+                - name: site
+                  value: "{site}"
+                - name: type
+                  value: apps
+                - name: name
+                  value: textgen
+                - name: filename
+                  value: index.js
+    - type: preview-app
       elementXpath: //plugin[@id='org.rd.plugin.openai.GenerateContent']
       parentXpath: //widget[@id='craftercms.components.PreviewToolbar']
       element:

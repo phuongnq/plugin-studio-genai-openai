@@ -1,6 +1,7 @@
 import { PluginDescriptor } from '@craftercms/studio-ui';
 
 import { GenerateContent } from './components/GenerateContent';
+import { QuickCreateContent } from './components/QuickCreateContent';
 import { GenerateContentPanelButton } from './components/GenerateContentPanelButton';
 import GenerateContentDialog from './components/GenerateContentDialog';
 
@@ -10,6 +11,7 @@ const plugin: PluginDescriptor = {
   stylesheets: undefined,
   id: 'org.rd.plugin.openai',
   widgets: {
+    'org.rd.plugin.openai.QuickCreateContent': QuickCreateContent,
     'org.rd.plugin.openai.GenerateContent': GenerateContent,
     'org.rd.plugin.openai.GenerateContentPanelButton': GenerateContentPanelButton,
     'org.rd.plugin.openai.dialog': GenerateContentDialog
