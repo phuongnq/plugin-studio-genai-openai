@@ -73,7 +73,6 @@ function useEnv() {
 // endregion
 // region Legacy Form
 const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
-const newContentCreationComplete = /*#__PURE__*/ createAction('NEW_CONTENT_CREATION_COMPLETE');
 // endregion
 // region Widget Dialog
 const showWidgetDialog = /*#__PURE__*/ createAction('SHOW_WIDGET_DIALOG');
@@ -253,6 +252,61 @@ const palette = {
 };
 
 /*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+// region Batch Actions
+const batchActions = /*#__PURE__*/ createAction('BATCH_ACTIONS');
+// endregion
+
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+const reloadDetailedItem = /*#__PURE__*/ createAction('RELOAD_DETAILED_ITEM');
+// endregion
+
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
+const showSystemNotification = /*#__PURE__*/ createAction('SHOW_SYSTEM_NOTIFICATION');
+
+/*
  * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -310,6 +364,14 @@ var HttpUtils = {
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 var API_LIST_QUICK_CREATE_CONTENT = '/api/2/content/list_quick_create_content.json';
+var API_CONTENT_TYPE_DEFINITION = '/api/2/configuration/get_configuration';
+var API_WRITE_CONTENT = '/api/1/services/api/1/content/write-content.json';
+/**
+ * Fetch quick create list
+ * @param authoringBase the authoring base url
+ * @param siteId the site id
+ * @returns list of quick create items
+ */
 var fetchQuickCreateList = function (authoringBase, siteId) { return __awaiter(void 0, void 0, void 0, function () {
     var url, res;
     var _a;
@@ -334,6 +396,66 @@ var fetchQuickCreateList = function (authoringBase, siteId) { return __awaiter(v
         }
     });
 }); };
+/**
+ * Get content type definition
+ * @param authoringBase the authoring base url
+ * @param siteId the site id
+ * @param contentType content type
+ */
+var getContentTypeDefinition = function (authoringBase, siteId, contentType) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, res;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                url = "".concat(authoringBase).concat(API_CONTENT_TYPE_DEFINITION, "?module=studio&path=/content-types").concat(contentType, "/form-definition.xml&siteId=").concat(siteId);
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, HttpUtils.get(url)];
+            case 2:
+                res = _b.sent();
+                if (res.status === 200 && ((_a = res.response) === null || _a === void 0 ? void 0 : _a.content)) {
+                    return [2 /*return*/, res.response.content];
+                }
+                return [2 /*return*/, ''];
+            case 3:
+                _b.sent();
+                return [2 /*return*/, ''];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+/**
+ * Write content rest api
+ * @param authoringBase the authoring base url
+ * @param siteId the site id
+ * @param path path to save
+ * @param fileName file name to save
+ * @param contentType content type of new content
+ * @param body body of new content
+ * @returns true if succeeded, false otherwise
+ */
+var writeContent = function (authoringBase, siteId, path, fileName, contentType, body) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, res;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(authoringBase).concat(API_WRITE_CONTENT, "?site=").concat(siteId, "&phase=onSave&path=").concat(path, "&fileName=").concat(fileName, "&contentType=").concat(contentType, "&unlock=true");
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, HttpUtils.post(url, body)];
+            case 2:
+                res = _a.sent();
+                return [2 /*return*/, res.status === 200];
+            case 3:
+                _a.sent();
+                return [2 /*return*/, false];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
 
 function QuickCreateContent(props) {
     var _this = this;
@@ -350,7 +472,6 @@ function QuickCreateContent(props) {
                     case 0: return [4 /*yield*/, fetchQuickCreateList(authoringBase, siteId)];
                     case 1:
                         items = _a.sent();
-                        console.log(items);
                         setQuickCreateItems(items);
                         return [2 /*return*/];
                 }
@@ -365,21 +486,123 @@ function QuickCreateContent(props) {
         setAnchorEl(event.currentTarget);
     };
     var onMenuClose = function () { return setAnchorEl(null); };
-    var onQuickCreateItemSelected = function (props) {
+    var onQuickCreateItemCreated = function (props) {
         onMenuClose();
-        dispatch(showEditDialog(__assign(__assign({}, props), { inProgress: false, onSaveSuccess: newContentCreationComplete() })));
+        dispatch(showEditDialog(__assign(__assign({}, props), { inProgress: false, onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path: props.path })]) })));
+    };
+    var buildContent = function (_a) {
+        var authoringBase = _a.authoringBase, siteId = _a.siteId, contentTypeId = _a.contentTypeId;
+        return __awaiter(_this, void 0, void 0, function () {
+            var config, configXmlDoc, xpath, result, fields, node, fieldType, fieldId, contentXmlDoc, contentTypeElement, displayTemplate, displayTemplateElement, noTemplateRequired, noTemplateRequiredElement, mergeStrategy, mergeStrategyElement, objectId, objectGroupIdElement, objectIdElement, fileNameElement, folderNameElement, _i, fields_1, field, fieldId, fieldElement, date, isoString, createdDateElement, createdDateDtElement, lastModifiedDateElement, lastModifiedDateDtElement, content;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, getContentTypeDefinition(authoringBase, siteId, contentTypeId)];
+                    case 1:
+                        config = _b.sent();
+                        console.log(config);
+                        configXmlDoc = (new DOMParser()).parseFromString(config, 'text/xml');
+                        console.log(configXmlDoc);
+                        xpath = '/form/sections/section/fields/field';
+                        result = configXmlDoc.evaluate(xpath, configXmlDoc, null, XPathResult.ANY_TYPE, null);
+                        fields = [];
+                        node = result.iterateNext();
+                        while (node) {
+                            fieldType = node.getElementsByTagName('type')[0].textContent;
+                            fieldId = node.getElementsByTagName('id')[0].textContent;
+                            if (fieldType === 'input' || fieldType === 'textarea') {
+                                fields.push({ fieldType: fieldType, fieldId: fieldId });
+                            }
+                            node = result.iterateNext();
+                        }
+                        contentXmlDoc = (new DOMParser()).parseFromString('<page></page>', 'text/xml');
+                        contentTypeElement = contentXmlDoc.createElement('content-type');
+                        contentTypeElement.textContent = contentTypeId;
+                        contentXmlDoc.documentElement.appendChild(contentTypeElement);
+                        displayTemplate = configXmlDoc.evaluate('/form/properties/property[name="display-template"]', configXmlDoc, null, XPathResult.ANY_TYPE, null).iterateNext();
+                        displayTemplateElement = contentXmlDoc.createElement('display-template');
+                        displayTemplateElement.textContent = displayTemplate ? displayTemplate.getElementsByTagName('value')[0].textContent : '';
+                        contentXmlDoc.documentElement.appendChild(displayTemplateElement);
+                        noTemplateRequired = configXmlDoc.evaluate('/form/properties/property[name="no-template-required"]', configXmlDoc, null, XPathResult.ANY_TYPE, null).iterateNext();
+                        noTemplateRequiredElement = contentXmlDoc.createElement('no-template-required');
+                        noTemplateRequiredElement.textContent = noTemplateRequired ? noTemplateRequired.getElementsByTagName('value')[0].textContent : '';
+                        contentXmlDoc.documentElement.appendChild(noTemplateRequiredElement);
+                        mergeStrategy = configXmlDoc.evaluate('/form/properties/property[name="merge-strategy"]', configXmlDoc, null, XPathResult.ANY_TYPE, null).iterateNext();
+                        mergeStrategyElement = contentXmlDoc.createElement('merge-strategy');
+                        mergeStrategyElement.textContent = mergeStrategy ? mergeStrategy.getElementsByTagName('value')[0].textContent : '';
+                        contentXmlDoc.documentElement.appendChild(mergeStrategyElement);
+                        objectId = crypto.randomUUID();
+                        objectGroupIdElement = contentXmlDoc.createElement('objectGroupId');
+                        objectGroupIdElement.textContent = objectId.substring(0, 4);
+                        contentXmlDoc.documentElement.appendChild(objectGroupIdElement);
+                        objectIdElement = contentXmlDoc.createElement('objectId');
+                        objectIdElement.textContent = objectId;
+                        contentXmlDoc.documentElement.appendChild(objectIdElement);
+                        fileNameElement = contentXmlDoc.createElement('file-name');
+                        fileNameElement.textContent = 'index.xml';
+                        contentXmlDoc.documentElement.appendChild(fileNameElement);
+                        folderNameElement = contentXmlDoc.createElement('folder-name');
+                        // TODO: Get from Open AI
+                        folderNameElement.textContent = 'Curabitur lobortis laoreet vehicula'.toLowerCase().replace(/\s/g, '-');
+                        contentXmlDoc.documentElement.appendChild(folderNameElement);
+                        for (_i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
+                            field = fields_1[_i];
+                            fieldId = field.fieldId;
+                            fieldElement = contentXmlDoc.createElement(fieldId);
+                            // TODO: get from Open AI
+                            fieldElement.textContent = 'Curabitur lobortis laoreet vehicula';
+                            contentXmlDoc.documentElement.appendChild(fieldElement);
+                        }
+                        date = new Date();
+                        isoString = date.toISOString();
+                        createdDateElement = contentXmlDoc.createElement('createdDate');
+                        createdDateElement.textContent = isoString;
+                        contentXmlDoc.documentElement.appendChild(createdDateElement);
+                        createdDateDtElement = contentXmlDoc.createElement('createdDate_dt');
+                        createdDateDtElement.textContent = isoString;
+                        contentXmlDoc.documentElement.appendChild(createdDateDtElement);
+                        lastModifiedDateElement = contentXmlDoc.createElement('lastModifiedDate');
+                        lastModifiedDateElement.textContent = isoString;
+                        contentXmlDoc.documentElement.appendChild(lastModifiedDateElement);
+                        lastModifiedDateDtElement = contentXmlDoc.createElement('lastModifiedDate_dt');
+                        lastModifiedDateDtElement.textContent = isoString;
+                        contentXmlDoc.documentElement.appendChild(lastModifiedDateDtElement);
+                        content = (new XMLSerializer()).serializeToString(contentXmlDoc);
+                        console.log(content);
+                        return [2 /*return*/, content];
+                }
+            });
+        });
     };
     var onItemSelected = function (_a) {
         var contentTypeId = _a.contentTypeId, path = _a.path;
-        var today = new Date();
-        var formatPath = path
-            .replace('{year}', "".concat(today.getFullYear()))
-            .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
-        onQuickCreateItemSelected === null || onQuickCreateItemSelected === void 0 ? void 0 : onQuickCreateItemSelected({
-            path: formatPath,
-            contentTypeId: contentTypeId,
-            isNewContent: true,
-            authoringBase: authoringBase
+        return __awaiter(_this, void 0, void 0, function () {
+            var today, formatPath, folderName, contentPath, body, res;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        today = new Date();
+                        formatPath = path
+                            .replace('{year}', "".concat(today.getFullYear()))
+                            .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
+                        folderName = 'Curabitur lobortis laoreet vehicula'.toLowerCase().replace(/\s/g, '-');
+                        contentPath = "".concat(formatPath, "/").concat(folderName);
+                        return [4 /*yield*/, buildContent({ authoringBase: authoringBase, siteId: siteId, contentTypeId: contentTypeId })];
+                    case 1:
+                        body = _b.sent();
+                        return [4 /*yield*/, writeContent(authoringBase, siteId, contentPath, 'index.xml', contentTypeId, body)];
+                    case 2:
+                        res = _b.sent();
+                        if (res) {
+                            onQuickCreateItemCreated === null || onQuickCreateItemCreated === void 0 ? void 0 : onQuickCreateItemCreated({
+                                path: contentPath,
+                                contentTypeId: contentTypeId,
+                                site: siteId,
+                                authoringBase: authoringBase
+                            });
+                        }
+                        return [2 /*return*/];
+                }
+            });
         });
     };
     return (React.createElement(React.Fragment, null,
@@ -425,23 +648,6 @@ function GenerateContentPanelButton(props) {
     };
     return (React.createElement(ToolsPanelListItemButton, { icon: icon, title: title, onClick: handleClick }));
 }
-
-/*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-const showSystemNotification = /*#__PURE__*/ createAction('SHOW_SYSTEM_NOTIFICATION');
 
 function AnswerSkeletonItem() {
     return (React.createElement(ListItem, { style: { height: '25px' } },
